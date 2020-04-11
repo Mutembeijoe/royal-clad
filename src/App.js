@@ -7,21 +7,38 @@ import Header from './components/header/header.component';
 import Authentication from './pages/authentication/authentication.component';
 
 import './App.css';
+import { auth } from './firebase/firebase.utils';
 
 
+class App extends React.Component {
 
+  state = {
+    currentUser:null
+  }
 
-function App() {
-  return (
-    <div>
-    <Header/>
-      <Switch>
-        <Route exact path="/" component={HomePage} />
-        <Route exact path="/shop" component={ShopPage} />
-        <Route exact path="/signin" component={Authentication} />
-      </Switch>
-    </div>
-  );
+  unsuscribeFromAuth = null
+
+  componentDidMount(){
+    this.unsuscribeFromAuth = auth.onAuthStateChanged(user => this.setState({currentUser:user}))
+  }
+
+  componentWillUnmount(){
+    this.unsuscribeFromAuth()
+  }
+
+  render(){
+    return (
+      <div>
+      <Header currentUser={this.state.currentUser}/>
+        <Switch>
+          <Route exact path="/" component={HomePage} />
+          <Route exact path="/shop" component={ShopPage} />
+          <Route exact path="/signin" component={Authentication} />
+        </Switch>
+      </div>
+    )
+  }
+  
 }
 
 export default App;
