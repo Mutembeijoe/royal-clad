@@ -16,3 +16,15 @@ export const selectCartItemsCount = createSelector(
         accumatedValue + item.quantity , 0)
     }
 )
+
+export const selectToggleDropDownStatus = createSelector(
+    [selectCart],
+    cart => cart.hidden
+)
+
+
+export const selectCartTotal = createSelector(
+    [selectCartItems],
+    (items ) => items.reduce((accumatedValue, item) => 
+    accumatedValue + (item.quantity* item.price) , 0)
+)
