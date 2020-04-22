@@ -1,7 +1,8 @@
 import shopActionTypes from './shop.types';
 
 const INITIAL_STATE = {
-    collections: []
+    collections: [],
+    loading:true
 }
 
 const shopReducer = (state=INITIAL_STATE, action) => {
@@ -9,7 +10,8 @@ const shopReducer = (state=INITIAL_STATE, action) => {
         case shopActionTypes.UPDATE_COLLECTION:
             return{
                 ...state,
-                collections: action.payload
+                collections: action.payload,
+                loading:false
             }
         default:
             return state;
