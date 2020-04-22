@@ -5,7 +5,8 @@ import CollectionItem from '../../components/collection-item/collection-item.com
 
 import './collection-page.styles.scss'
 
-const CollectionPage = ({collection:{title,items}})=>(
+const CollectionPage = ({collection:{title,items}})=>{
+    return (
     <div className="collection-page">
         <h1 className="title">{title} Page</h1>
         <div className="items">
@@ -13,7 +14,7 @@ const CollectionPage = ({collection:{title,items}})=>(
         </div>
        
     </div>
-)
+)}
 
 
 const mapStateToProps = (state, ownProps) =>({
