@@ -2,41 +2,36 @@ import React from 'react'
 import CollectionsOverview from '../../components/collection-overview/collection-overview.component';
 import { Route} from 'react-router-dom';
 import CollectionPage from '../collection/collection-page.component';
-import { firestore, convertCollectSnapshotToMap } from '../../firebase/firebase.utils';
 import { connect } from 'react-redux';
-import { updateCollection } from '../../redux/shop/shop.actions';
+import { fetchCollectionAsync } from '../../redux/shop/shop.actions';
 import { createStructuredSelector } from 'reselect';
-import { selectCollectionLoading } from '../../redux/shop/shop.selectors';
+import { selectCollectionLoading, selectIsCollectionLoaded } from '../../redux/shop/shop.selectors';
 
 
 class ShopPage extends React.Component {
 
     componentDidMount(){
-        const {updateCollection} = this.props;
-        const collectionRef =firestore.collection("collections")
-
-        collectionRef.get().then(snapshot => {
-            const collectionMap = convertCollectSnapshotToMap(snapshot)
-            updateCollection(collectionMap)
-            this.setState({loading:false})
-        })
+        const {fetchCollectionAsync} = this.props;
+        fetchCollectionAsync()
     }
     render(){
-        const {match, isLoading} = this.props;
+        const {match, isLoaded} = this.props;
         return (
             <div className="shop-page">
-                <Route exact path={`${match.path}`} render = { (props) => <CollectionsOverview isLoading={isLoading} {...props}/> } />
-                <Route path={`${match.path}/:collectionId`} render= {(props)=> <CollectionPage isLoading={isLoading} {...props}/> } />
+                <Route exact path={`${match.path}`} render = { (props) => <CollectionsOverview isLoading={!isLoaded} {...props}/> } />
+                <Route path={`${match.path}/:collectionId`} render= {(props)=> <CollectionPage isLoading={!isLoaded} {...props}/> } />
             </div>
         )
     } 
 }
+
 const mapDispatchToProps = (dispatch) =>({
-    updateCollection :(collectionMap) =>  dispatch(updateCollection(collectionMap))
+    fetchCollectionAsync :() =>  dispatch(fetchCollectionAsync())
 })
 
 const mapStateToProps= createStructuredSelector({
-    isLoading : selectCollectionLoading
+    isLoading : selectCollectionLoading,
+    isLoaded :selectIsCollectionLoaded
 })
 
 export default connect(mapStateToProps,mapDispatchToProps)(ShopPage);

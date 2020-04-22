@@ -15,10 +15,16 @@ export const selectCollectionsForPreview = createSelector(
 export const selectCollection = (categoryId) => createSelector(
     [selectCollections],
     collections => collections ? collections[categoryId] : null
-)
+) 
 
 export const selectCollectionLoading = createSelector(
     [selectShop],
     shop => shop.loading
 )
+
+export const selectIsCollectionLoaded = createSelector(
+    [selectShop],
+    shop => !!shop.collections
+)
+
 
