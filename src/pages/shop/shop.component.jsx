@@ -11,12 +11,11 @@ import { selectCollectionLoading } from '../../redux/shop/shop.selectors';
 
 class ShopPage extends React.Component {
 
-    unsuscribeFromSnapShot = null
     componentDidMount(){
         const {updateCollection} = this.props;
         const collectionRef =firestore.collection("collections")
 
-        this.unsuscribeFromSnapShot = collectionRef.onSnapshot(snapshot => {
+        collectionRef.get().then(snapshot => {
             const collectionMap = convertCollectSnapshotToMap(snapshot)
             updateCollection(collectionMap)
             this.setState({loading:false})
