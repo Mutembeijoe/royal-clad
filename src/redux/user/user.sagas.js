@@ -1,11 +1,11 @@
 import {takeLatest, put, all, call} from 'redux-saga/effects';
 import { userActionTypes } from './user.types';
 import { auth, googleProvider, createUserProfileDocument, getCurrentUser } from '../../firebase/firebase.utils';
-import { signInFailure, signInSuccess, signOutFailure, signOutSuccess } from './user.actions';
+import { signInFailure, signInSuccess, signOutFailure, signOutSuccess, signUpSuccess, signUpFailure, emailSignInStart } from './user.actions';
 
-function* getSnapShotFromUserAuth(userAuth){
+function* getSnapShotFromUserAuth(userAuth, additionalInfo){
     try {
-        const userRef = yield call(createUserProfileDocument, userAuth)
+        const userRef = yield call(createUserProfileDocument, userAuth, additionalInfo)
         const userSnapshot = yield userRef.get()
         yield put(signInSuccess({id:userSnapshot.id, ...userSnapshot.data()}))
     } catch (error) {
@@ -51,28 +51,58 @@ function* signOutUser(){
     }
 }
 
-export function* googleSignInStart(){
+function* signUpUser({payload:{email, password, displayName}}){
+    try {
+        const {user}=  yield auth.createUserWithEmailAndPassword(email, password)
+        yield put(signUpSuccess(user, displayName))
+    } catch (error) {
+        yield put(signUpFailure(error))
+    }
+}
+
+function* signInAfterSignUp({payload:{user, displayName}}){
+    try {
+        yield getSnapShotFromUserAuth(user,{displayName})
+    } catch (error) {
+        yield signUpFailure(error)
+    }
+}
+
+/*
+***** Listeners  START HERE *****
+*/
+
+function* onGoogleSignInStart(){
     yield takeLatest(userActionTypes.GOOGLE_SIGN_IN_START, googleSignIn )
 }
 
-export function* emailSignInStart(){
+function* onEmailSignInStart(){
     yield takeLatest(userActionTypes.EMAIL_SIGN_IN_START,emailSignIn )
 }
 
-export function* onGetUserSession(){
+function* onGetUserSession(){
     yield takeLatest(userActionTypes.GET_USER_SESSION, isUserAuthenticated )
 }
 
-export function* onSignOut(){
+function* onSignOut(){
     yield takeLatest(userActionTypes.SIGN_OUT_START, signOutUser)
 }
 
+function* onSignUpStart(){
+    yield takeLatest(userActionTypes.SIGN_UP_START, signUpUser)
+}
+
+function* onSignUpSuccess(){
+    yield takeLatest(userActionTypes.SIGN_UP_SUCCESS, signInAfterSignUp)
+}
 
 export function* userSagas(){
     yield all([
-        call(googleSignInStart),
-        call(emailSignInStart),
+        call(onGoogleSignInStart),
+        call(onEmailSignInStart),
         call(onGetUserSession),
-        call(onSignOut)
+        call(onSignOut),
+        call(onSignUpStart),
+        call(onSignUpSuccess)
     ])
 }
