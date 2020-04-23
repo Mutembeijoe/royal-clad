@@ -2,7 +2,6 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 
-import { auth } from '../../firebase/firebase.utils'
 import CartIcon from '../cart-icon/cart-icon.component'
 import CartDropdown from '../cart-dropdown/cart-dropdown.component'
 import { selectCurrentUser } from '../../redux/user/user.selectors'
@@ -12,13 +11,14 @@ import { selectToggleDropDownStatus } from '../../redux/cart/cart.selectors'
 import {ReactComponent as Logo} from '../../assets/crown.svg'
 import './header.styles.scss'
 import { createStructuredSelector } from 'reselect'
+import { signOutStart } from '../../redux/user/user.actions'
 
 
 
 
 
 
-const Header = ({currentUser, hidden})=>(
+const Header = ({currentUser, hidden, signOutStart})=>(
     <div className="header">
         <Link to='/' className='logo-container'>
             <Logo></Logo>
@@ -28,7 +28,7 @@ const Header = ({currentUser, hidden})=>(
             <Link to='/contact' className="option">CONTACT</Link>
             {
               currentUser ? 
-              <div className="option" onClick={() => auth.signOut()}>SIGN OUT</div> 
+              <div className="option" onClick={signOutStart}>SIGN OUT</div> 
               :
               <Link to='/signin' className='option'>SIGN IN</Link> 
             }
@@ -43,4 +43,9 @@ const mapStateToProps = createStructuredSelector({
     currentUser : selectCurrentUser,
     hidden : selectToggleDropDownStatus
 })
-export default connect(mapStateToProps)(Header);
+const mapStateToDispatch = (dispatch) => ({
+    signOutStart : () => dispatch(signOutStart()),
+})
+
+
+export default connect(mapStateToProps, mapStateToDispatch)(Header);
