@@ -15,10 +15,10 @@ class ShopPage extends React.Component {
         fetchCollectionAsync()
     }
     render(){
-        const {match, isLoaded} = this.props;
+        const {match, isLoaded, isLoading} = this.props;
         return (
             <div className="shop-page">
-                <Route exact path={`${match.path}`} render = { (props) => <CollectionsOverview isLoading={!isLoaded} {...props}/> } />
+                <Route exact path={`${match.path}`} render = { (props) => <CollectionsOverview isLoading={isLoading} {...props}/> } />
                 <Route path={`${match.path}/:collectionId`} render= {(props)=> <CollectionPage isLoading={!isLoaded} {...props}/> } />
             </div>
         )

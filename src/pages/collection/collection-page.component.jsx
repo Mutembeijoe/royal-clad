@@ -5,6 +5,7 @@ import CollectionItem from '../../components/collection-item/collection-item.com
 
 import './collection-page.styles.scss'
 import WithSpinner from '../../components/with-spinner/with-spinner.component';
+import { compose } from 'redux';
 
 const CollectionPage = ({collection:{title,items}})=>{
     return (
@@ -22,4 +23,9 @@ const mapStateToProps = (state, ownProps) =>({
     collection : selectCollection(ownProps.match.params.collectionId)(state)
 })
 
-export default WithSpinner(connect(mapStateToProps)(CollectionPage));
+export default compose(
+    connect(mapStateToProps),
+    WithSpinner
+)(CollectionPage)
+
+//  WithSpinner(connect(mapStateToProps)(CollectionPage));
